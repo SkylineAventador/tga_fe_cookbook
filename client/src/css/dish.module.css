@@ -1,0 +1,10 @@
+.dishWrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.dishImg {
+    border: none;
+    border-radius: 10px;
+}
