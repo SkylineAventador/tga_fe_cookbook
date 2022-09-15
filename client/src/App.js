@@ -1,104 +1,58 @@
-import { useState, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DishList from "./bricks/DishList.jsx";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import Offcanvas from "react-bootstrap/Offcanvas";
 import Icon from "@mdi/react";
 import { mdiLoading } from "@mdi/js";
 import styles from "./css/recipe.module.css";
 
 function App() {
-  const [recipeLoadCall, setRecipeLoadCall] = useState({
-    state: "pending",
-  });
+  let navigate = useNavigate();
 
-  const [ingredientLoadCall, setIngredientLoadCall] = useState({
-    state: "pending",
-  });
+  return (
+    <div className="App pt-5">
+      <Navbar
+        fixed="top"
+        expand={"sm"}
+        className="mb-3"
+        bg="dark"
+        variant="dark"
+      >
+        <Container fluid>
+          <Navbar.Brand
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/")}
+          >
+            Dima's Cookbook
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-sm`} />
+          <Navbar.Offcanvas id={`offcanvasNavbar-expand-sm`}>
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title id={`offcanvasNavbarLabel-expand-sm`}>
+                Dima's Cookbook
+              </Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+              <Nav className="justify-content-end flex-grow-1 pe-3">
+                <Nav.Link onClick={() => navigate("/recipeList")}>
+                  Recipes
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/ingredientList")}>
+                  Ingredients
+                </Nav.Link>
+              </Nav>
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
 
-  function prepareIngredientsMap(ingredients) {
-    const result = {};
-
-    ingredients.forEach((element) => {
-      result[element.id] = element.name;
-    });
-
-    return result;
-  }
-
-  useEffect(() => {
-    fetch("http://localhost:3000/ingredient/list", {
-      method: "GET",
-    }).then(async (response) => {
-      const responseJson = await response.json();
-      if (response.status >= 400) {
-        setIngredientLoadCall({ state: "error", error: responseJson });
-      } else {
-        setIngredientLoadCall({
-          state: "success",
-          data: prepareIngredientsMap(responseJson),
-        });
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:3000/recipe/list", {
-      method: "GET",
-    }).then(async (response) => {
-      const responseJson = await response.json();
-      if (response.status >= 400) {
-        setRecipeLoadCall({ state: "error", error: responseJson });
-      } else {
-        setRecipeLoadCall({ state: "success", data: responseJson });
-      }
-    });
-  }, []);
-
-  function getChild() {
-    const isPending =
-      recipeLoadCall.state === "pending" ||
-      ingredientLoadCall.state === "pending";
-    const isSuccess =
-      recipeLoadCall.state === "success" &&
-      ingredientLoadCall.state === "success";
-    const isError =
-      recipeLoadCall.state === "error" || ingredientLoadCall.state === "error";
-
-      console.log("CURRENT STATE IS: recipe:" + recipeLoadCall.state + " ingredients:" + ingredientLoadCall.state);
-      console.log("Pending " + isPending + " Success " + isSuccess + " Error " + isError);
-
-    if (isPending) {
-      return (
-        <div className={styles.loading}>
-          <h1>
-            Loading...{" "}
-            <span style={{ fontSize: "24px", fontWeight: "lighter" }}>
-              Please wait.
-            </span>
-          </h1>
-          <Icon size={5} path={mdiLoading} spin={true} />
-        </div>
-      );
-    } else if (isSuccess) {
-      return (
-        <DishList
-          style={{ padding: "1rem" }}
-          dishList={recipeLoadCall.data}
-          ingredientList={ingredientLoadCall.data}
-        />
-      );
-    } else if (isError) {
-      return (
-        <div className={styles.error}>
-          <div>Error during recipes data loading.</div>
-          <br />
-          <pre>{JSON.stringify(recipeLoadCall.error, null, 2)}</pre>
-        </div>
-      );
-    }
-  }
-
-  return <div className="App">{getChild()}</div>;
+      <Outlet />
+    </div>
+  );
 }
 
 export default App;
