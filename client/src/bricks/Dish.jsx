@@ -3,10 +3,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Card from "react-bootstrap/Card";
 import styles from "../css/dish.module.css";
 
+function addIngredientNames(rIngredients, ingredientMap) {
+    return rIngredients.map ((el)=>{
+        return {
+            id: el.id,
+            amount: el.amount,
+            unit: el.unit,
+            name: ingredientMap[el.id]
+        }
+    })
+  }
 
 function renderSmallCard(props){
+
     const dishDescTruncated = props.dish.description ? props.dish.description.substring(0, 50) : "No Description";
-    console.log(props.dish);
+    let mappedDishIngredients = addIngredientNames(props.dish.ingredients, props.ingredientList);
     return (
         <Card className="bg-light">
             <Card.Header>
@@ -17,7 +28,7 @@ function renderSmallCard(props){
                 <hr/>
                 <p className="card-text">{dishDescTruncated}...</p>
                 <ul>
-                    {props.dish.ingredients.map((ingredient) => {
+                    {mappedDishIngredients.map((ingredient) => {
                         return <li>{ingredient.name} - {`${ingredient.amount} ${ingredient.unit}`}</li>
                     })}
                 </ul>
