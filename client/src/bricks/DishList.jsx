@@ -40,10 +40,11 @@ function DishList(props) {
   }
   return (
     <div>
-      <Navbar bg="light">
+      <Navbar collapseOnSelect expand="sm" bg="light">
         <div className="container-fluid">
           <Navbar.Brand>Dish List</Navbar.Brand>
-          <div>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse style={{ justifyContent: "right" }}>
             <Form className="d-flex" onSubmit={handleSearch}>
               <Form.Control
                 id={"searchInput"}
@@ -61,6 +62,7 @@ function DishList(props) {
                 <Icon size={1} path={mdiMagnify} />
               </Button>
               <Button
+                className={"d-none d-md-block"}
                 variant="outline-primary"
                 onClick={() =>
                   setViewType((currentState) => {
@@ -88,18 +90,35 @@ function DishList(props) {
                 {isBig ? "Small" : "Big"}
               </Button>
             </Form>
-          </div>
+          </Navbar.Collapse>
         </div>
       </Navbar>
-      {isGrid ? (
-        isBig ? (
+      <div className={"d-block d-md-none"}>
+        {isBig ? (
           <DishRegularDetail dishList={filteredDishList} detail="big" />
         ) : (
-          <DishRegularDetail dishList={filteredDishList} ingredientList={props.ingredientList} detail="small" />
-        )
-      ) : (
-        <DishTableList dishList={filteredDishList} />
-      )}
+          <DishRegularDetail
+            dishList={filteredDishList}
+            ingredientList={props.ingredientList}
+            detail="small"
+          />
+        )}
+      </div>
+      <div className="d-none d-md-block">
+        {isGrid ? (
+          isBig ? (
+            <DishRegularDetail dishList={filteredDishList} detail="big" />
+          ) : (
+            <DishRegularDetail
+              dishList={filteredDishList}
+              ingredientList={props.ingredientList}
+              detail="small"
+            />
+          )
+        ) : (
+          <DishTableList dishList={filteredDishList} />
+        )}
+      </div>
     </div>
   );
 }

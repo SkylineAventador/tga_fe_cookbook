@@ -10,6 +10,7 @@ specifiers:
   react: ^18.2.0
   react-bootstrap: ^2.5.0
   react-dom: ^18.2.0
+  react-router-dom: ^6.4.0
   react-scripts: 5.0.1
   web-vitals: ^2.1.4
 
@@ -23,6 +24,7 @@ dependencies:
   react: 18.2.0
   react-bootstrap: 2.5.0_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
+  react-router-dom: 6.4.0_biqbaboplfbrettd7655fr4n2y
   react-scripts: 5.0.1_vpm4epegb5iztd7yhibv2hqiti
   web-vitals: 2.1.4
 
@@ -2023,6 +2025,11 @@ packages:
     dependencies:
       '@babel/runtime': 7.19.0
       react: 18.2.0
+    dev: false
+
+  /@remix-run/router/1.0.0:
+    resolution: {integrity: sha512-SCR1cxRSMNKjaVYptCzBApPDqGwa3FGdjVHc+rOToocNPHQdIYLZBfv/3f+KvYuXDkUGVIW9IAzmPNZDRL1I4A==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/@remix-run/router/-/router-1.0.0.tgz}
+    engines: {node: '>=14'}
     dev: false
 
   /@restart/hooks/0.4.7_react@18.2.0:
@@ -8285,6 +8292,28 @@ packages:
   /react-refresh/0.11.0:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/react-refresh/-/react-refresh-0.11.0.tgz}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /react-router-dom/6.4.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-4Aw1xmXKeleYYQ3x0Lcl2undHR6yMjXZjd9DKZd53SGOYqirrUThyUb0wwAX5VZAyvSuzjNJmZlJ3rR9+/vzqg==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/react-router-dom/-/react-router-dom-6.4.0.tgz}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-router: 6.4.0_react@18.2.0
+    dev: false
+
+  /react-router/6.4.0_react@18.2.0:
+    resolution: {integrity: sha512-B+5bEXFlgR1XUdHYR6P94g299SjrfCBMmEDJNcFbpAyRH1j1748yt9NdDhW3++nw1lk3zQJ6aOO66zUx3KlTZg==, tarball: https://repo.plus4u.net/operatorGate/repository/public-javascript/react-router/-/react-router-6.4.0.tgz}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.0.0
+      react: 18.2.0
     dev: false
 
   /react-scripts/5.0.1_vpm4epegb5iztd7yhibv2hqiti:
