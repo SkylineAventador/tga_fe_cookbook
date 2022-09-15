@@ -6,7 +6,7 @@ import styles from "../css/dish.module.css";
 
 function renderSmallCard(props){
     const dishDescTruncated = props.dish.description ? props.dish.description.substring(0, 50) : "No Description";
-    let indredientNameIdx = -1;
+    console.log(props.dish);
     return (
         <Card className="bg-light">
             <Card.Header>
@@ -18,8 +18,7 @@ function renderSmallCard(props){
                 <p className="card-text">{dishDescTruncated}...</p>
                 <ul>
                     {props.dish.ingredients.map((ingredient) => {
-                        indredientNameIdx++;
-                        return <li>{props.indredientName[indredientNameIdx].name} - {`${ingredient.amount} ${ingredient.unit}`}</li>
+                        return <li>{ingredient.name} - {`${ingredient.amount} ${ingredient.unit}`}</li>
                     })}
                 </ul>
             </Card.Body>

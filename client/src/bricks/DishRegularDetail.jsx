@@ -3,26 +3,26 @@ import Dish from "./Dish.jsx";
 import styles from "../css/dish.module.css";
 
 function DishRegularDetail(props) {
-  function parseIngredients(dishIngredients, allIngredients) {
-    return allIngredients.filter((o1) =>
-      dishIngredients.some((o2) => {
-        return o1.id === o2.id ? o2['name'] = o1.name : "Unknown";
-      })
-    );
-    
+  function addIngredientNames(rIngredients, ingredientMap) {
+    return rIngredients.map ((el)=>{
+        return {
+            id: el.id,
+            amount: el.amount,
+            unit: el.unit,
+            name: ingredientMap[el.id]
+        }
+    })
   }
 
   function getDishList(dishList, ingredientList) {
     return (
       <div className={styles.dishWrapper}>
         {dishList.map((dish) => {
-          let ingredientNames =
+          let mappedDishData =
             props.detail === "small"
-              ? parseIngredients(dish.ingredients, ingredientList)
-              : [];
-        //   let dishWithIngredients = { ...dish, ingredientNames };
-          console.log(dishWithIngredients);
-          return <Dish key={dish.id} dish={dishWithIngredients} detail={props.detail} />;
+              ? addIngredientNames(dish.ingredients, ingredientList)
+              : dish;
+          return <Dish key={dish.id} dish={mappedDishData} detail={props.detail} />;
         })}
       </div>
     );

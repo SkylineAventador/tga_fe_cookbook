@@ -15,6 +15,16 @@ function App() {
     state: "pending",
   });
 
+  function prepareIngredientsMap(ingredients) {
+    const result = {};
+
+    ingredients.forEach((element) => {
+      result[element.id] = element.name;
+    });
+
+    return result;
+  }
+
   useEffect(() => {
     fetch("http://localhost:3000/ingredient/list", {
       method: "GET",
@@ -23,7 +33,10 @@ function App() {
       if (response.status >= 400) {
         setIngredientLoadCall({ state: "error", error: responseJson });
       } else {
-        setIngredientLoadCall({ state: "success", data: responseJson });
+        setIngredientLoadCall({
+          state: "success",
+          data: prepareIngredientsMap(responseJson),
+        });
       }
     });
   }, []);
@@ -42,37 +55,46 @@ function App() {
   }, []);
 
   function getChild() {
-    switch (recipeLoadCall.state) {
-      case "pending":
-        return (
-          <div className={styles.loading}>
-            <h1>
-              Loading...{" "}
-              <span style={{ fontSize: "24px", fontWeight: "lighter" }}>
-                Please wait.
-              </span>
-            </h1>
-            <Icon size={5} path={mdiLoading} spin={true} />
-          </div>
-        );
-      case "success":
-        return (
-          <DishList
-            style={{ padding: "1rem" }}
-            dishList={recipeLoadCall.data}
-            ingredientList={ingredientLoadCall.data}
-          />
-        );
-      case "error":
-        return (
-          <div className={styles.error}>
-            <div>Error during recipes data loading.</div>
-            <br />
-            <pre>{JSON.stringify(recipeLoadCall.error, null, 2)}</pre>
-          </div>
-        );
-      default:
-        return null;
+    const isPending =
+      recipeLoadCall.state === "pending" ||
+      ingredientLoadCall.state === "pending";
+    const isSuccess =
+      recipeLoadCall.state === "success" &&
+      ingredientLoadCall.state === "success";
+    const isError =
+      recipeLoadCall.state === "error" || ingredientLoadCall.state === "error";
+
+      console.log("CURRENT STATE IS: recipe:" + recipeLoadCall.state + " ingredients:" + ingredientLoadCall.state);
+      console.log("Pending " + isPending + " Success " + isSuccess + " Error " + isError);
+
+    if (isPending) {
+      return (
+        <div className={styles.loading}>
+          <h1>
+            Loading...{" "}
+            <span style={{ fontSize: "24px", fontWeight: "lighter" }}>
+              Please wait.
+            </span>
+          </h1>
+          <Icon size={5} path={mdiLoading} spin={true} />
+        </div>
+      );
+    } else if (isSuccess) {
+      return (
+        <DishList
+          style={{ padding: "1rem" }}
+          dishList={recipeLoadCall.data}
+          ingredientList={ingredientLoadCall.data}
+        />
+      );
+    } else if (isError) {
+      return (
+        <div className={styles.error}>
+          <div>Error during recipes data loading.</div>
+          <br />
+          <pre>{JSON.stringify(recipeLoadCall.error, null, 2)}</pre>
+        </div>
+      );
     }
   }
 
