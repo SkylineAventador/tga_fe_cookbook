@@ -28,7 +28,7 @@ function DishList(props) {
         .toLocaleLowerCase()
         .includes(searchBy.toLocaleLowerCase());
     });
-  }, [searchBy]);
+  }, [searchBy, props.dishList]);
 
   function handleSearch(event) {
     event.preventDefault();
@@ -95,7 +95,7 @@ function DishList(props) {
         isBig ? (
           <DishRegularDetail dishList={filteredDishList} detail="big" />
         ) : (
-          <DishRegularDetail dishList={filteredDishList} detail="small" />
+          <DishRegularDetail dishList={filteredDishList} ingredientList={props.ingredientList} detail="small" />
         )
       ) : (
         <DishTableList dishList={filteredDishList} />

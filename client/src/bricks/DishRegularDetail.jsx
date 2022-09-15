@@ -3,15 +3,31 @@ import Dish from "./Dish.jsx";
 import styles from "../css/dish.module.css";
 
 function DishRegularDetail(props) {
-    function getDishList(dishList) {
-        return (<div className={styles.dishWrapper}>
-            {dishList.map((dish) => {
-                return <Dish key={dish.id} dish={dish} detail={props.detail}/>
-            })}
-        </div>);
-    }
+  function parseIngredients(dishIngredients, allIngredients) {
+    return allIngredients.filter((o1) =>
+      dishIngredients.some((o2) => {
+        return o1.id === o2.id ? o2['name'] = o1.name : "Unknown";
+      })
+    );
+    
+  }
 
-    return getDishList(props.dishList);
+  function getDishList(dishList, ingredientList) {
+    return (
+      <div className={styles.dishWrapper}>
+        {dishList.map((dish) => {
+          let ingredientNames =
+            props.detail === "small"
+              ? parseIngredients(dish.ingredients, ingredientList)
+              : [];
+        //   let dishWithIngredients = { ...dish, ingredientNames };
+          console.log(dishWithIngredients);
+          return <Dish key={dish.id} dish={dishWithIngredients} detail={props.detail} />;
+        })}
+      </div>
+    );
+  }
+  return getDishList(props.dishList, props.ingredientList);
 }
 
 export default DishRegularDetail;
