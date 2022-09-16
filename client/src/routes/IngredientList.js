@@ -1,15 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
-
-function prepareIngredientsMap(ingredients) {
-  const result = {};
-
-  ingredients.forEach((element) => {
-    result[element.id] = element.name;
-  });
-
-  return result;
-}
+import Card from "react-bootstrap/Card";
+import styles from "../css/ingredient.module.css";
 
 function IngredientList(props) {
   const [ingredientLoadCall, setIngredientLoadCall] = useState({
@@ -26,17 +18,18 @@ function IngredientList(props) {
       } else {
         setIngredientLoadCall({
           state: "success",
-          data: prepareIngredientsMap(responseJson),
+          data: responseJson,
         });
+        console.log(ingredientLoadCall.data);
       }
     });
   }, []);
   return (
-    <div style={{ disply: "flex", flexDirection: "column" }}>
+    <div className={styles.ingredientCardsWrapper}>
       {console.log("Current state is: " + ingredientLoadCall.state)}
       {ingredientLoadCall.state === "success"
         ? ingredientLoadCall.data.map((ingredient) => {
-            return <p>{ingredient.name}</p>;
+            return <Card body border="dark">{ingredient.name}</Card>;
           })
         : "NO data available"}
     </div>
