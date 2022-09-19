@@ -1,19 +1,27 @@
 import Icon from "@mdi/react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { mdiPencilPlusOutline } from "@mdi/js";
+import { mdiLoading, mdiPencilPlusOutline } from "@mdi/js";
 import { useState } from "react";
-import styles from "../css/recipeCreation.module.css";
 
 function RecipeCreationModal(props) {
-  const emptyIngredient = () => {
-    return { id: "", amount: 0, unit: "" };
-  };
-
-  const [formData, setFormData] = useState({
+  const [validated, setValidated] = useState(false);
+  const [isModalShown, setShow] = useState(false);
+  const defaultForm = useState({
     name: "",
     description: "",
     ingredients: [],
   });
+  const [formData, setFormData] = useState(defaultForm);
+  const [recipeCreateCall, setRecipeCreateCall] = useState({
+    state: "inactive",
+  });
+
+  const handleShowModal = () => setShow(true);
+  const handleCloseModal = () => setShow(false);
+
+  const emptyIngredient = () => {
+    return { id: "", amount: 0, unit: "" };
+  };
 
   const setField = (name, val) => {
     return setFormData((formData) => {
@@ -33,9 +41,31 @@ function RecipeCreationModal(props) {
   };
 
   const handleSubmit = async (e) => {
+    const form = e.currentTarget;
     e.preventDefault();
+    e.stopPropagation();
 
-    console.log(formData);
+    if (form.checkValidity()) {
+      setValidated(true);
+      return;
+    }
+
+    setRecipeCreateCall({ state: "pending" });
+
+    const res = await fetch(`http://localhost:3000/recipe/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...formData }),
+    });
+    const data = await res.json();
+    if (res.status >= 400) {
+      setRecipeCreateCall({ state: "error", error: data });
+    } else {
+      setRecipeCreateCall({ state: "success", data });
+      handleCloseModal();
+    }
   };
 
   const addEmptyIngredient = () => {
@@ -57,21 +87,10 @@ function RecipeCreationModal(props) {
     setFormData(newFormData);
   }
 
-//   function createThumbnails(){
-//     for (let index = 0; index < 3; index++) {
-//         return addEmptyIngredient();
-//     }
-//   }
-
-  const [isModalShown, setShow] = useState(false);
-
   //Sorting obtained ingredients by Czech (default) alphabet.
   const sortedIngredientList = props.ingredientList.sort((a, b) => {
     return a.name.localeCompare(b.name, "cs");
   });
-
-  const handleShowModal = () => setShow(true);
-  const handleCloseModal = () => setShow(false);
 
   // function to create new line of input group to add ingredient
   const ingredienceInputGroup = (ingredient, index) => {
@@ -92,6 +111,9 @@ function RecipeCreationModal(props) {
               );
             })}
           </Form.Select>
+          <Form.Control.Feedback type="invalid">
+            Enter valid ingredient name. Only letters and numbers are allowed.
+          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group className="mb-1" controlId="amount">
@@ -103,6 +125,10 @@ function RecipeCreationModal(props) {
               setIngredientField("amount", parseInt(e.target.value), index)
             }
           />
+          <Form.Control.Feedback type="invalid">
+            Enter amount number corresponding to unit selected. Special symbols
+            are not allowed.
+          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group className="mb-1" controlId="unit">
@@ -111,6 +137,9 @@ function RecipeCreationModal(props) {
             value={ingredient.unit}
             onChange={(e) => setIngredientField("unit", e.target.value, index)}
           />
+          <Form.Control.Feedback type="invalid">
+            Enter unit symbol or shortage. Numbers are not allowed.
+          </Form.Control.Feedback>
         </Form.Group>
 
         <Button
@@ -135,10 +164,22 @@ function RecipeCreationModal(props) {
           <Modal.Title>Recipe Creation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form id="rc_form" onSubmit={(e) => handleSubmit(e)}>
+          <Form
+            noValidate
+            validated={validated}
+            id="rc_form"
+            onSubmit={(e) => handleSubmit(e)}
+          >
             <Form.Group controlId="recipeName">
               <Form.Label>Recipe name</Form.Label>
-              <Form.Control type="text" placeholder="Enter recipe name here" />
+              <Form.Control
+                type="text"
+                placeholder="Enter recipe name here"
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                You have to fill this filed in order to continue.
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="recipeDescription">
@@ -147,11 +188,15 @@ function RecipeCreationModal(props) {
                 //Preventing input filed become too high, in case of need, there is a scroll bar.
                 style={{ maxHeight: "256px" }}
                 as="textarea"
-                placeholder="Enter recipe instructions here"
+                placeholder="Enter recipe instructions here. Max 1000 symbols"
+                maxLength={1000}
               />
+
+              <Form.Control.Feedback type="invalid">
+                Enter description with maximum of 1000 symbols.
+              </Form.Control.Feedback>
             </Form.Group>
 
-            {addEmptyIngredient}
             {formData.ingredients.map((ing, index) => {
               return ingredienceInputGroup(ing, index);
             })}
@@ -161,6 +206,13 @@ function RecipeCreationModal(props) {
             </Button>
 
             <div className={"d-flex justify-content-between mt-5"}>
+              {/* show an error in case of a problem during POST request to the server */}
+              {recipeCreateCall.state === "error" && (
+                <div className="text-danger">
+                  Error: {recipeCreateCall.error.errorMessage}
+                </div>
+              )}
+
               <Button
                 variant="danger"
                 size="md"
@@ -174,8 +226,13 @@ function RecipeCreationModal(props) {
                 type="submit"
                 size="md"
                 className="w-25"
+                disabled={recipeCreateCall.state === 'pending'}
               >
-                Create recipe
+                {recipeCreateCall.state === "pending" ? (
+                  <Icon size={0.8} path={mdiLoading} spin="true" />
+                ) : (
+                  "Create recipe"
+                )}
               </Button>
             </div>
           </Form>
