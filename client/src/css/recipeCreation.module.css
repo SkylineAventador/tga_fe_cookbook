@@ -1,0 +1,7 @@
+.ingredientFormControlWrapper {
+    display: flex;
+}
+
+.ingredientFormControlWrapper > * {
+    flex: 1 0 auto;
+}

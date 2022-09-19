@@ -35,6 +35,7 @@ function RecipeList(props) {
         setIngredientLoadCall({
           state: "success",
           data: prepareIngredientsMap(responseJson),
+          rawData: responseJson
         });
       }
     });
@@ -81,6 +82,7 @@ function RecipeList(props) {
           style={{ padding: "1rem" }}
           dishList={recipeLoadCall.data}
           ingredientList={ingredientLoadCall.data}
+          rawIngredientList={ingredientLoadCall.rawData}
         />
       );
     } else if (isError) {

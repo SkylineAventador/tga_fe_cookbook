@@ -14,6 +14,7 @@ import {
 
 import DishTableList from "./DishTableDetail.jsx";
 import DishRegularDetail from "./DishRegularDetail.jsx";
+import RecipeCreationModal from "./RecipeCreationModal.jsx";
 
 function DishList(props) {
   const [viewType, setViewType] = useState("grid");
@@ -45,7 +46,9 @@ function DishList(props) {
           <Navbar.Brand>Dish List</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse style={{ justifyContent: "right" }}>
-            <Form className="d-flex" onSubmit={handleSearch}>
+            <Form className="d-flex gap-1 flex-wrap" onSubmit={handleSearch}>
+              {/* Recipe creation button here */}
+              <RecipeCreationModal ingredientList={props.rawIngredientList}/>
               <Form.Control
                 id={"searchInput"}
                 style={{ maxWidth: "150px" }}
