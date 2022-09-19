@@ -528,5 +528,17 @@
       }
     ],
     "id": "e6a2450d6d6cd747"
+  },
+  {
+    "name": "Test paprika",
+    "description": "Test paprika desc",
+    "ingredients": [
+      {
+        "id": "34109b1b210e32ed",
+        "amount": 3,
+        "unit": "g"
+      }
+    ],
+    "id": "835b66d5b888a602"
   }
 ]

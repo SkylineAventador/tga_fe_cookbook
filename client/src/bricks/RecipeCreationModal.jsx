@@ -47,7 +47,8 @@ function RecipeCreationModal(props) {
 
     const payload = {
       ...formData,
-    //   dishId: props.ingredientList.id,
+      name: form[0].value,
+      description: form[1].value,
     };
 
     if (!form.checkValidity()) {
@@ -65,8 +66,7 @@ function RecipeCreationModal(props) {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    console.log("RES STATUS: " + res.status);
-    console.log("RES DATA: " + data);
+
     if (res.status >= 400) {
       setRecipeCreateCall({ state: "error", error: data });
     } else {
