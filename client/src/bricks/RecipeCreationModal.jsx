@@ -6,11 +6,11 @@ import { useState } from "react";
 function RecipeCreationModal(props) {
   const [validated, setValidated] = useState(false);
   const [isModalShown, setShow] = useState(false);
-  const defaultForm = useState({
+  const defaultForm = {
     name: "",
     description: "",
     ingredients: [],
-  });
+  };
   const [formData, setFormData] = useState(defaultForm);
   const [recipeCreateCall, setRecipeCreateCall] = useState({
     state: "inactive",
@@ -45,7 +45,12 @@ function RecipeCreationModal(props) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (form.checkValidity()) {
+    const payload = {
+      ...formData,
+    //   dishId: props.ingredientList.id,
+    };
+
+    if (!form.checkValidity()) {
       setValidated(true);
       return;
     }
@@ -57,14 +62,19 @@ function RecipeCreationModal(props) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...formData }),
+      body: JSON.stringify(payload),
     });
     const data = await res.json();
+    console.log("RES STATUS: " + res.status);
+    console.log("RES DATA: " + data);
     if (res.status >= 400) {
       setRecipeCreateCall({ state: "error", error: data });
     } else {
       setRecipeCreateCall({ state: "success", data });
       handleCloseModal();
+
+      //Refreshing form data to defauts
+      setFormData(defaultForm);
     }
   };
 
@@ -124,6 +134,8 @@ function RecipeCreationModal(props) {
             onChange={(e) =>
               setIngredientField("amount", parseInt(e.target.value), index)
             }
+            min={1}
+            max={20}
           />
           <Form.Control.Feedback type="invalid">
             Enter amount number corresponding to unit selected. Special symbols
@@ -178,7 +190,7 @@ function RecipeCreationModal(props) {
                 required
               />
               <Form.Control.Feedback type="invalid">
-                You have to fill this filed in order to continue.
+                You have to fill this field in order to continue.
               </Form.Control.Feedback>
             </Form.Group>
 
@@ -209,7 +221,7 @@ function RecipeCreationModal(props) {
               {/* show an error in case of a problem during POST request to the server */}
               {recipeCreateCall.state === "error" && (
                 <div className="text-danger">
-                  Error: {recipeCreateCall.error.errorMessage}
+                  Ingredient error: {recipeCreateCall.error.errorMessage}
                 </div>
               )}
 
@@ -226,10 +238,10 @@ function RecipeCreationModal(props) {
                 type="submit"
                 size="md"
                 className="w-25"
-                disabled={recipeCreateCall.state === 'pending'}
+                disabled={recipeCreateCall.state === "pending"}
               >
                 {recipeCreateCall.state === "pending" ? (
-                  <Icon size={0.8} path={mdiLoading} spin="true" />
+                  <Icon size={0.8} path={mdiLoading} spin={true} />
                 ) : (
                   "Create recipe"
                 )}
