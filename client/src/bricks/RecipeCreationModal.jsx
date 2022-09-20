@@ -17,7 +17,11 @@ function RecipeCreationModal(props) {
   });
 
   const handleShowModal = () => setShow(true);
-  const handleCloseModal = () => setShow(false);
+  const handleCloseModal = () => {
+    setShow(false);
+    //Refreshing form data to defauts
+    setFormData(defaultForm);
+  };
 
   const emptyIngredient = () => {
     return { id: "", amount: 0, unit: "" };
@@ -72,9 +76,6 @@ function RecipeCreationModal(props) {
     } else {
       setRecipeCreateCall({ state: "success", data });
       handleCloseModal();
-
-      //Refreshing form data to defauts
-      setFormData(defaultForm);
     }
   };
 

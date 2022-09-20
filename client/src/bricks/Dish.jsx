@@ -2,6 +2,8 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Card from "react-bootstrap/Card";
 import styles from "../css/dish.module.css";
+import Icon from "@mdi/react";
+import { mdiPencilOutline } from "@mdi/js";
 
 function addIngredientNames(rIngredients, ingredientMap) {
   return rIngredients.map((el) => {
@@ -69,10 +71,15 @@ function renderBigCard(props) {
         <hr />
         <p className="card-text">{props.dish.description}</p>
       </Card.Body>
-      <Card.Footer>
-        {" "}
-        <span style={{ fontWeight: "bold" }}>Dish ID: </span>
+      <Card.Footer style={{display: 'flex', justifyContent: 'flex-start'}}>
+        <span style={{ fontWeight: "bold", marginRight: "0.25rem"}}>Dish ID: </span>
         {props.dish.id}
+        <Icon 
+            size={1} 
+            path={mdiPencilOutline} 
+            style={{ marginLeft: "auto", borderRadius: "5px", backgroundColor: "green", color: 'white', cursor: 'pointer' }} 
+            onClick={() => null} 
+          />
       </Card.Footer>
     </Card>
   );

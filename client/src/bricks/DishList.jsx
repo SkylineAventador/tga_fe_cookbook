@@ -23,6 +23,16 @@ function DishList(props) {
   const isBig = detailType === "big";
   const [searchBy, setSearchBy] = useState("");
 
+  const [createRecipeShow, setCreateRecipeShow] = useState({
+    state: false,
+  });
+
+  const handleCreateRecipeShow = (data) =>
+    setCreateRecipeShow({
+      state: true,
+      data,
+    });
+
   const filteredDishList = useMemo(() => {
     return props.dishList.filter((item) => {
       return item.name
@@ -46,9 +56,17 @@ function DishList(props) {
           <Navbar.Brand>Dish List</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse style={{ justifyContent: "right" }}>
+            <Button
+              variant={
+                createRecipeShow.state ? "outline-danger" : "outline-success"
+              }
+              style={{ marginRight: "1rem" }}
+            >
+              {createRecipeShow.state ? "Exit edit" : "Enter edit"}
+            </Button>
             <Form className="d-flex gap-1 flex-wrap" onSubmit={handleSearch}>
               {/* Recipe creation button here */}
-              <RecipeCreationModal ingredientList={props.rawIngredientList}/>
+              <RecipeCreationModal ingredientList={props.rawIngredientList} />
               <Form.Control
                 id={"searchInput"}
                 style={{ maxWidth: "150px" }}
