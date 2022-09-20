@@ -17,6 +17,7 @@ function DishRegularDetail(props) {
                 dish={dish}
                 ingredientList={ingredientList}
                 detail={props.detail}
+                onEdit={props.onEdit}
               />
             </div>
           );

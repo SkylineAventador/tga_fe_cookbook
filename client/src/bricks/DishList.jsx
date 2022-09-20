@@ -23,15 +23,17 @@ function DishList(props) {
   const isBig = detailType === "big";
   const [searchBy, setSearchBy] = useState("");
 
-  const [createRecipeShow, setCreateRecipeShow] = useState({
-    state: false,
-  });
+  const defaultRecipeShowState = {
+    state: false
+  }
+
+  const [createRecipeShow, setCreateRecipeShow] = useState(defaultRecipeShowState);
 
   const handleCreateRecipeShow = (data) =>
     setCreateRecipeShow({
       state: true,
       data,
-    });
+    });  
 
   const filteredDishList = useMemo(() => {
     return props.dishList.filter((item) => {
@@ -56,17 +58,9 @@ function DishList(props) {
           <Navbar.Brand>Dish List</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse style={{ justifyContent: "right" }}>
-            <Button
-              variant={
-                createRecipeShow.state ? "outline-danger" : "outline-success"
-              }
-              style={{ marginRight: "1rem" }}
-            >
-              {createRecipeShow.state ? "Exit edit" : "Enter edit"}
-            </Button>
             <Form className="d-flex gap-1 flex-wrap" onSubmit={handleSearch}>
               {/* Recipe creation button here */}
-              <RecipeCreationModal ingredientList={props.rawIngredientList} />
+              <RecipeCreationModal setCreateRecipeShow={() => {setCreateRecipeShow(defaultRecipeShowState)}} ingredientList={props.rawIngredientList} editState={createRecipeShow} />
               <Form.Control
                 id={"searchInput"}
                 style={{ maxWidth: "150px" }}
@@ -128,7 +122,7 @@ function DishList(props) {
       <div className="d-none d-md-block">
         {isGrid ? (
           isBig ? (
-            <DishRegularDetail dishList={filteredDishList} detail="big" />
+            <DishRegularDetail onEdit={(dish) => {handleCreateRecipeShow(dish)}} dishList={filteredDishList} detail="big" />
           ) : (
             <DishRegularDetail
               dishList={filteredDishList}

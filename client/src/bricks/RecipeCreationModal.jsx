@@ -1,13 +1,14 @@
 import Icon from "@mdi/react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { mdiLoading, mdiPencilPlusOutline } from "@mdi/js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function RecipeCreationModal(props) {
   const [validated, setValidated] = useState(false);
   const [isModalShown, setShow] = useState(false);
   const defaultForm = {
     name: "",
+    imgUri: "",
     description: "",
     ingredients: [],
   };
@@ -15,6 +16,22 @@ function RecipeCreationModal(props) {
   const [recipeCreateCall, setRecipeCreateCall] = useState({
     state: "inactive",
   });
+
+  const initUpdatingDishData = (data) => {
+    setFormData({
+      ...formData,
+      name: data.name,
+      description: data.description,
+      ingredients: data.ingredients,
+    });
+    handleShowModal();
+  };
+
+  //Entering dish edit mode, watching clicked dish card state.
+  useEffect(() => {
+    props.editState.state === true &&
+      initUpdatingDishData(props.editState.data);
+  }, [props.editState.state]);
 
   const handleShowModal = () => setShow(true);
   const handleCloseModal = () => {
@@ -44,21 +61,12 @@ function RecipeCreationModal(props) {
     });
   };
 
-  const handleSubmit = async (e) => {
-    const form = e.currentTarget;
-    e.preventDefault();
-    e.stopPropagation();
-
+  const submitCreate = async (form) => {
     const payload = {
       ...formData,
       name: form[0].value,
       description: form[1].value,
     };
-
-    if (!form.checkValidity()) {
-      setValidated(true);
-      return;
-    }
 
     setRecipeCreateCall({ state: "pending" });
 
@@ -77,6 +85,32 @@ function RecipeCreationModal(props) {
       setRecipeCreateCall({ state: "success", data });
       handleCloseModal();
     }
+  };
+
+  const submitUpdate = (form) => {
+    const payload = {
+      ...formData,
+      name: form[0].value,
+      description: form[1].value,
+    };
+
+    handleCloseModal();
+    //Reseting parent state to default state [DishList:63]
+    props.setCreateRecipeShow();
+  };
+
+  const handleSubmit = (e) => {
+    const form = e.currentTarget;
+    e.preventDefault();
+    e.stopPropagation();
+
+    //Performing form inputs validations
+    if (!form.checkValidity()) {
+      setValidated(true);
+      return;
+    }
+
+    props.editState.state === true ? submitUpdate(form) : submitCreate(form);
   };
 
   const addEmptyIngredient = () => {
@@ -136,7 +170,7 @@ function RecipeCreationModal(props) {
               setIngredientField("amount", parseInt(e.target.value), index)
             }
             min={1}
-            max={20}
+            max={1000}
           />
           <Form.Control.Feedback type="invalid">
             Enter amount number corresponding to unit selected. Special symbols
@@ -187,6 +221,8 @@ function RecipeCreationModal(props) {
               <Form.Label>Recipe name</Form.Label>
               <Form.Control
                 type="text"
+                value={formData?.name || ""}
+                onChange={(e) => setField("name", e.target.value)}
                 placeholder="Enter recipe name here"
                 required
               />
@@ -201,6 +237,8 @@ function RecipeCreationModal(props) {
                 //Preventing input filed become too high, in case of need, there is a scroll bar.
                 style={{ maxHeight: "256px" }}
                 as="textarea"
+                value={formData?.description || ""}
+                onChange={(e) => setField("description", e.target.value)}
                 placeholder="Enter recipe instructions here. Max 1000 symbols"
                 maxLength={1000}
               />
@@ -234,19 +272,35 @@ function RecipeCreationModal(props) {
               >
                 Close
               </Button>
-              <Button
-                variant="success"
-                type="submit"
-                size="md"
-                className="w-25"
-                disabled={recipeCreateCall.state === "pending"}
-              >
-                {recipeCreateCall.state === "pending" ? (
-                  <Icon size={0.8} path={mdiLoading} spin={true} />
-                ) : (
-                  "Create recipe"
-                )}
-              </Button>
+              {props.editState.state === true ? (
+                <Button
+                  variant="success"
+                  type="submit"
+                  size="md"
+                  className="w-25"
+                  disabled={recipeCreateCall.state === "pending"}
+                >
+                  {recipeCreateCall.state === "pending" ? (
+                    <Icon size={0.8} path={mdiLoading} spin={true} />
+                  ) : (
+                    "Update recipe"
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  variant="success"
+                  type="submit"
+                  size="md"
+                  className="w-25"
+                  disabled={recipeCreateCall.state === "pending"}
+                >
+                  {recipeCreateCall.state === "pending" ? (
+                    <Icon size={0.8} path={mdiLoading} spin={true} />
+                  ) : (
+                    "Create recipe"
+                  )}
+                </Button>
+              )}
             </div>
           </Form>
         </Modal.Body>

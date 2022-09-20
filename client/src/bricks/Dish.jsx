@@ -77,8 +77,8 @@ function renderBigCard(props) {
         <Icon 
             size={1} 
             path={mdiPencilOutline} 
-            style={{ marginLeft: "auto", borderRadius: "5px", backgroundColor: "green", color: 'white', cursor: 'pointer' }} 
-            onClick={() => null} 
+            style={{ marginLeft: "auto", borderRadius: "5px", backgroundColor: "green", color: "white", cursor: "pointer" }} 
+            onClick={() => props.onEdit(props.dish)} 
           />
       </Card.Footer>
     </Card>
