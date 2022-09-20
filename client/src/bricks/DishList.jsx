@@ -24,16 +24,21 @@ function DishList(props) {
   const [searchBy, setSearchBy] = useState("");
 
   const defaultRecipeShowState = {
-    state: false
-  }
+    state: false,
+  };
 
-  const [createRecipeShow, setCreateRecipeShow] = useState(defaultRecipeShowState);
-
+  const [createRecipeShow, setCreateRecipeShow] = useState(
+    defaultRecipeShowState
+  );
+  const handleRecipeDataUpdate = () => {
+    setCreateRecipeShow(defaultRecipeShowState);
+    props.triggerRecipeDataUpdate();
+  };
   const handleCreateRecipeShow = (data) =>
     setCreateRecipeShow({
       state: true,
       data,
-    });  
+    });
 
   const filteredDishList = useMemo(() => {
     return props.dishList.filter((item) => {
@@ -60,7 +65,13 @@ function DishList(props) {
           <Navbar.Collapse style={{ justifyContent: "right" }}>
             <Form className="d-flex gap-1 flex-wrap" onSubmit={handleSearch}>
               {/* Recipe creation button here */}
-              <RecipeCreationModal setCreateRecipeShow={() => {setCreateRecipeShow(defaultRecipeShowState)}} ingredientList={props.rawIngredientList} editState={createRecipeShow} />
+              <RecipeCreationModal
+                setCreateRecipeShow={() => {
+                  handleRecipeDataUpdate();
+                }}
+                ingredientList={props.rawIngredientList}
+                editState={createRecipeShow}
+              />
               <Form.Control
                 id={"searchInput"}
                 style={{ maxWidth: "150px" }}
@@ -122,7 +133,13 @@ function DishList(props) {
       <div className="d-none d-md-block">
         {isGrid ? (
           isBig ? (
-            <DishRegularDetail onEdit={(dish) => {handleCreateRecipeShow(dish)}} dishList={filteredDishList} detail="big" />
+            <DishRegularDetail
+              onEdit={(dish) => {
+                handleCreateRecipeShow(dish);
+              }}
+              dishList={filteredDishList}
+              detail="big"
+            />
           ) : (
             <DishRegularDetail
               dishList={filteredDishList}

@@ -16,11 +16,16 @@ function RecipeCreationModal(props) {
   const [recipeCreateCall, setRecipeCreateCall] = useState({
     state: "inactive",
   });
+  const [recipeUpdateCall, setRecipeUpdateCall] = useState({
+    state: "inactive",
+  });
 
   const initUpdatingDishData = (data) => {
     setFormData({
       ...formData,
+      id: data.id,
       name: data.name,
+      imgUri: data.imgUri,
       description: data.description,
       ingredients: data.ingredients,
     });
@@ -38,6 +43,8 @@ function RecipeCreationModal(props) {
     setShow(false);
     //Refreshing form data to defauts
     setFormData(defaultForm);
+    //Reseting parent state to default state [DishList:63]
+    props.setCreateRecipeShow();
   };
 
   const emptyIngredient = () => {
@@ -87,16 +94,25 @@ function RecipeCreationModal(props) {
     }
   };
 
-  const submitUpdate = (form) => {
-    const payload = {
-      ...formData,
-      name: form[0].value,
-      description: form[1].value,
-    };
+  const submitUpdate = async (form) => {
+    setRecipeUpdateCall({ state: "pending" });
 
-    handleCloseModal();
-    //Reseting parent state to default state [DishList:63]
-    props.setCreateRecipeShow();
+    const res = await fetch(`http://localhost:3000/recipe/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      //No need to create payload, all edited values are already modified in formData state object.
+      body: JSON.stringify({ ...formData }),
+    });
+    const data = await res.json();
+
+    if (res.status >= 400) {
+      setRecipeUpdateCall({ state: "error", error: data });
+    } else {
+      setRecipeUpdateCall({ state: "success", data });
+      handleCloseModal();
+    }
   };
 
   const handleSubmit = (e) => {
@@ -264,6 +280,12 @@ function RecipeCreationModal(props) {
                 </div>
               )}
 
+              {recipeUpdateCall.state === "error" && (
+                <div className="text-danger">
+                  Update error: {recipeUpdateCall.error.errorMessage}
+                </div>
+              )}
+
               <Button
                 variant="danger"
                 size="md"
@@ -278,9 +300,9 @@ function RecipeCreationModal(props) {
                   type="submit"
                   size="md"
                   className="w-25"
-                  disabled={recipeCreateCall.state === "pending"}
+                  disabled={recipeUpdateCall.state === "pending"}
                 >
-                  {recipeCreateCall.state === "pending" ? (
+                  {recipeUpdateCall.state === "pending" ? (
                     <Icon size={0.8} path={mdiLoading} spin={true} />
                   ) : (
                     "Update recipe"

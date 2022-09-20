@@ -35,7 +35,7 @@ function RecipeList(props) {
         setIngredientLoadCall({
           state: "success",
           data: prepareIngredientsMap(responseJson),
-          rawData: responseJson
+          rawData: responseJson,
         });
       }
     });
@@ -81,6 +81,18 @@ function RecipeList(props) {
         <DishList
           style={{ padding: "1rem" }}
           dishList={recipeLoadCall.data}
+          triggerRecipeDataUpdate={() => {
+            fetch("http://localhost:3000/recipe/list", {
+              method: "GET",
+            }).then(async (response) => {
+              const responseJson = await response.json();
+              if (response.status >= 400) {
+                setRecipeLoadCall({ state: "error", error: responseJson });
+              } else {
+                setRecipeLoadCall({ state: "success", data: responseJson });
+              }
+            });
+          }}
           ingredientList={ingredientLoadCall.data}
           rawIngredientList={ingredientLoadCall.rawData}
         />
