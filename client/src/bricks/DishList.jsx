@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -15,8 +15,11 @@ import {
 import DishTableList from "./DishTableDetail.jsx";
 import DishRegularDetail from "./DishRegularDetail.jsx";
 import RecipeCreationModal from "./RecipeCreationModal.jsx";
+import UserContext from "../UserProvider.js";
 
 function DishList(props) {
+  const { setAuthorized, user } = useContext(UserContext);
+
   const [viewType, setViewType] = useState("grid");
   const [detailType, setDetailType] = useState("big");
   const isGrid = viewType === "grid";
@@ -65,13 +68,22 @@ function DishList(props) {
           <Navbar.Collapse style={{ justifyContent: "right" }}>
             <Form className="d-flex gap-1 flex-wrap" onSubmit={handleSearch}>
               {/* Recipe creation button here */}
-              <RecipeCreationModal
-                setCreateRecipeShow={() => {
-                  handleRecipeDataUpdate();
-                }}
-                ingredientList={props.rawIngredientList}
-                editState={createRecipeShow}
-              />
+              {/* Show modal only if user isAuthorized */}
+              <Button
+                variant="warning"
+                onClick={()=>setAuthorized()}
+              >
+                {user.isAuthorized ? "Unauthorize user" : "Authorize user"}
+              </Button>
+              {user.isAuthorized && (
+                <RecipeCreationModal
+                  setCreateRecipeShow={() => {
+                    handleRecipeDataUpdate();
+                  }}
+                  ingredientList={props.rawIngredientList}
+                  editState={createRecipeShow}
+                />
+              )}
               <Form.Control
                 id={"searchInput"}
                 style={{ maxWidth: "150px" }}
